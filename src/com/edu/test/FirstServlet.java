@@ -2,11 +2,13 @@ package com.edu.test;
 
 import java.io.*;
 import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 /*
  * 모든 서블릿 클래스의 상위 클래스는 HttpServlet으로, 서블릿이 웹상에서 HTTP 프로토콜을 이용해 서비스를 처리하기 위해 반드시 상속받아야 함.
  */
+@WebServlet("/hello2")
 public class FirstServlet extends HttpServlet {
     /*
      * 서블릿이 최초로 호출되었을 때 서블릿 컨테이너가 자동으로 실행하는 메소드.

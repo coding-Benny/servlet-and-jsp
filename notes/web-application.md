@@ -48,3 +48,49 @@
 - HTTP 프로토콜 기반으로 브라우저로부터 요청을 전달받아 처리하는 클래스
 - `service()` 메소드에는 요청방식에 따라 정해진 사양의 메소드가 호출되도록 구현되어 있음.
 - 반드시 재정의해야 하는 메소드는 없고 요청 방식에 따라 필요한 메소드를 재정의하여 구현
+## 2. 서블릿 실행 순서
+Java EE 기반 프로그램은 실행의 흐름을 컨테이너가 제어하는 제어의 역전(IOC; Inversion of Control)이 발생한다.
+따라서 애플리케이션 컨테이너들이 프로그램을 어떤 순서로 동작시키는지 이해하고 해당 순서에 맞게 개발해야 한다.
+![Servlet life cycle](https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory2&fname=http%3A%2F%2Fcfile27.uf.tistory.com%2Fimage%2F99F550385B03D4BA320613)
+## 3. 콜백 메소드와 서블릿 객체의 생명주기
+- 콜백 메소드(callback method): 어떤 객체에서 어떤 상황이 발생하면 컨테이너가 자동으로 호출하여 실행되는 메소드
+  - HttpServlet을 상속받아 재정의한 `init()`, `service()`
+  - GenericServlet에 선언된 `destroy()`
+### 서블릿 객체의 생성
+- **서버 입장**에서 클라이언트로부터 최초로 서블릿 실행 요청이 있을 때 `init()` → `service()`
+- 요청이 최초인지 판단하는 기준: 객체 생성 여부
+- 최초 아니면 한 번 생성한 객체를 재사용하고 `service()`만 실행하여 처리속도, 메모리 부분에서 효율적 
+### 서블릿 객체의 삭제
+- 서버를 중지시켜 웹 애플리케이션 서비스를 중지할 때 `destroy()` 호출하여 자원 해제
+## 4. 서블릿 실행
+- `/WEB-INF`는 웹서버가 사용하는 파일이 들어있는 중요한 디렉터리이므로 외부에서 클라이언트가 곧바로 접근하는 것을 막아둠
+- 접근 방법
+  1. `web.xml` 설정: 여러 개의 서블릿을 태그로 등록해 전체적인 관리가 용이하고 URL 변경도 소스 수정 없이 쉽게 변경 가능 
+      ```xml  
+      <!-- 실행할 서블릿을 웹서버에 등록 -->
+      <servlet>
+        <servlet-name></servlet-name>
+        <servlet-class></servlet-class>
+      </servlet>
+     <!-- <servlet>으로 등록한 서블릿을 실행할 URI 지정 -->
+     <servlet-mapping>
+       <servlet-name></servlet-name>
+       <url-pattern></url-pattern>
+     </servlet-mapping>
+      ```
+  2. @WebServlet: 자바 소스에서 설정파일 없이 쉽게 URL 패턴을 지정할 수 있지만 하나의 자바 소스에 하나의 서블릿 매핑만 가능해 유지보수성 저하 및 URL 값 변경 시 재컴파일 필요
+      ```java
+      import javax.servlet.annotation.WebServlet;
+      import javax.servlet.http.*;
+      
+      @WebServlet("/hello")
+      public class FirstServlet extends ttpServlet {
+            ~ 생략 ~
+      }
+      ```
+     
+- 요청방식에 따른 실행: HttpServlet에서 구현된 `service()` 메소드를 그대로 실행하고 싶을 때
+  ```java
+  protected void service(HttpServletRequest req, HttpServletResponse res)  // 클라이언트의 실행 요청에 따라 서로 다른 메소드를 호출 
+  public void service(ServletRequest req, ServletResponse res)  // 요청 때마다 실행
+  ```

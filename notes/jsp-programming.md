@@ -49,3 +49,48 @@ JSP 태그로 처리된 부분 이외에는 정적 콘텐츠로 처리되어 콘
 3. JSP 컨테이너는 `*.jsp` 파일을 변환한 `*.java` 파일을 컴파일하여 `*.class` 파일을 생성
 4. 컴파일된 자바 실행 파일은 서블릿 컨테이너에 의해 서블릿으로서 동작
 5. 변환과 컴파일 작업은 최초 요청이나 JSP가 변경되었을 때만 수행
+## 자바 서블릿 소스
+### `_jspService()` 메소드
+- JSP가 실행될 때마다 자동으로 호출되는 메소드
+- 어떤 JSP든지 자바 소스로 변환하면 반드시 `_jspService()` 메소드가 삽입된다.
+# 스크립트 기반 태그
+- `<% %>`로 둘러싸여져 있는 것이 특징
+- JSP 태그의 자바 소스 변환
+  ![JSP 태그의 자바 소스 변환](https://blog.kakaocdn.net/dn/bvfwN6/btqEwgj8PCW/hf5iAOnaZKLDhH754KtI61/img.png)
+- JSP 스크립트 태그
+  - `<%@ ... %>`: 페이지에 대한 정보 설정
+  - `<%! ... %>`: 멤버변수 또는 메소드 선언
+  - `<% ... %>`: `_jspService()` 내에 그대로 옮겨짐
+  - `<%= ... %>`: `_jspService()` 내에 그대로 옮겨짐. 단, `out.print();`로 변경됨.
+## 지시자
+- JSP 컨테이너가 JSP 페이지를 파싱하여 자바 소스로 변환하는데 필요한 정보를 알려주기 위해 사용
+- 구문: `<%@ 지시자 속성 = 값 %>` 
+### page 지시자
+- 컨테이너가 참조하는 다양한 정보 중에서 JSP 페이지에 종속적인 설정 정보들을 알려주기 위한 수단
+- `contentType` 속성: 웹 브라우저에 전송되는 문서의 타입과 문자코드를 지정
+  - 디폴트는 ISO-8859-1로 한글 미지원하므로 `charset` 값을 UTF-8로 설정
+- `import` 속성
+  - `import = "패키지명.파일명"`
+  - 콤마를 구분자로 여러 패키지명 나열하여 포함시킬 수 있음
+  - 다음 패키지들은 JSP 페이지에서 서블릿 소스로 변환 시 자동으로 포함되므로 별도 지정 필요 없음
+    - `import javax.servlet.*;`
+    - `import javax.servlet.http.*;`
+    - `import javax.servlet.jsp.*;`
+  
+- `errorPage`와 `isErrorPage` 속성
+  - `errorPage = "파일명"`
+  - `isErrorPage = "true/false"`
+    - `true`이면 현재 페이지는 오류 처리 페이지로 설
+  - JSP 페이지에서 오류가 발생했을 때 오류를 처리하기 위한 속성
+- `trimDirectiveWhitespaces` 속성
+  - `trimDirectiveWhitespaces = "true/false"`
+  - 소스 파일에 빈 줄이 생성되는 것을 조절하기 위한 속성
+  - 디폴트는 `false`
+- `pageEncoding` 속성
+  - `pageEncoding = "문자코드"`
+  - JSP 소스 저장 시 사용할 문자코드 지정
+  - 생략하면 `contentType` 속성의 `charset`에 지정된 값으로 설정
+- `session` 속성
+  - `session = "true/false`
+  - JSP 페이지의 세션 관리 처리 여부 지정
+  - 디폴트는 `true`
